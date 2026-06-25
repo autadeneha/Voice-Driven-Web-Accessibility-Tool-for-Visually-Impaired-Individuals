@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VisionaryAI Debug Test</title>
+<style>
+body{font-family:monospace;background:#0d1b2a;color:#e2e8f0;padding:20px;max-width:800px}
+h2{color:#00c9a7}
+.ok{color:#10b981} .err{color:#ef4444} .warn{color:#f59e0b} .info{color:#60a5fa}
+pre{background:#112233;padding:12px;border-radius:8px;font-size:12px;overflow-x:auto}
+.btn{background:#00c9a7;color:#000;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:700;margin:4px;font-size:13px}
+.btn:hover{background:#00a88c}
+#log{background:#0a1628;border:1px solid #1e3a5f;border-radius:8px;padding:12px;max-height:400px;overflow-y:auto;font-size:12px;line-height:1.8}
+</style>
+</head>
+<body>
+<h2>🔧 VisionaryAI Extension Debug Panel</h2>
+<p>Open this page with the VisionaryAI extension installed and active.</p>
+
+<button class="btn" onclick="runTests()">▶ Run All Tests</button>
+<button class="btn" onclick="testSpeak()">🔊 Test TTS</button>
+<button class="btn" onclick="testHindi()">🇮🇳 Test Hindi TTS</button>
+<button class="btn" onclick="clearLog()">🗑 Clear</button>
+
+<div id="log"></div>
+
+<script>
+const log = document.getElementById('log');
+function write(msg, cls='info') {
+  const d = document.createElement('div');
+  d.className = cls;
+  d.textContent = new Date().toLocaleTimeString() + ' | ' + msg;
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+
+function runTests() {
+  log.innerHTML = '';
+  write('=== VisionaryAI Extension Debug ===');
+
+  // 1. Check speech recognition
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SR) write('✅ SpeechRecognition: Available', 'ok');
+  else write('❌ SpeechRecognition: NOT available — commands will not work', 'err');
+
+  // 2. Check speech synthesis
+  if (window.speechSynthesis) write('✅ SpeechSynthesis: Available', 'ok');
+  else write('❌ SpeechSynthesis: NOT available — TTS will not work', 'err');
+
+  // 3. Check chrome APIs
+  if (typeof chrome !== 'undefined') write('✅ chrome API: Available', 'ok');
+  else write('❌ chrome API: NOT available', 'err');
+
+  if (typeof chrome?.runtime?.sendMessage === 'function') write('✅ chrome.runtime: Available', 'ok');
+  else write('❌ chrome.runtime: NOT available', 'err');
+
+  // 4. Check extension globals
+  if (window.__vaiVoiceEngineLoaded) write('✅ voice-engine.js: LOADED', 'ok');
+  else write('❌ voice-engine.js: NOT loaded — commands will not work', 'err');
+
+  if (window.__vaiReaderLoaded) write('✅ reader.js: LOADED', 'ok');
+  else write('❌ reader.js: NOT loaded — read page will not work', 'err');
+
+  if (window.__vaiOverlayLoaded) write('✅ ui-overlay.js: LOADED', 'ok');
+  else write('❌ ui-overlay.js: NOT loaded', 'err');
+
+  if (window.__vaiPrefsLoaded) write('✅ preferences.js: LOADED', 'ok');
+  else write('❌ preferences.js: NOT loaded', 'err');
+
+  // 5. Check key functions
+  const fns = ['speak','readPage','pauseReading','stopReading','resumeReading',
+                'summarizePage','openAIDescribeImage','describeAllImages',
+                'setOrbState','vaiShowWakeBanner','appendChatMsg'];
+  fns.forEach(fn => {
+    if (typeof window[fn] === 'function') write('✅ window.' + fn + '()', 'ok');
+    else write('⚠️  window.' + fn + '() — NOT defined', 'warn');
+  });
+
+  // 6. OpenAI key check
+  if (window.__vaiOpenAIKey && window.__vaiOpenAIKey.startsWith('sk-')) {
+    write('✅ OpenAI key: Present (sk-...'+window.__vaiOpenAIKey.slice(-4)+')', 'ok');
+  } else {
+    write('⚠️  OpenAI key: NOT SET — summary/image/chat need this', 'warn');
+  }
+
+  // 7. Voice count
+  const voices = speechSynthesis.getVoices();
+  const hindi   = voices.filter(v=>v.lang.startsWith('hi'));
+  const marathi = voices.filter(v=>v.lang.startsWith('mr'));
+  const english = voices.filter(v=>v.lang.startsWith('en'));
+  write('🔊 Voices: '+voices.length+' total | en:'+english.length+' | hi:'+hindi.length+' | mr:'+marathi.length,
+        voices.length?'ok':'err');
+  if (!hindi.length) write('⚠️  No Hindi voices — install from Windows Speech settings','warn');
+  if (!marathi.length) write('⚠️  No Marathi voices — install from Windows Speech settings','warn');
+
+  // 8. Check orb DOM element
+  if (document.getElementById('vai-orb')) write('✅ Orb element: Present in DOM', 'ok');
+  else write('⚠️  Orb element: Not in DOM (extension may not be injecting)', 'warn');
+
+  write('=== Tests complete ===');
+}
+
+function testSpeak() {
+  write('Testing English TTS...');
+  if (typeof window.speak === 'function') {
+    window.speak('Testing VisionaryAI text to speech. If you can hear this, TTS is working.');
+    write('✅ window.speak() called', 'ok');
+  } else {
+    write('⚠️  window.speak not found, using raw speechSynthesis', 'warn');
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance('Testing speech synthesis directly.');
+    speechSynthesis.speak(u);
+  }
+}
+
+function testHindi() {
+  write('Testing Hindi TTS...');
+  speechSynthesis.cancel();
+  const voices = speechSynthesis.getVoices();
+  const hindi = voices.find(v=>v.lang.startsWith('hi'));
+  if (hindi) {
+    write('Using voice: '+hindi.name+' ('+hindi.lang+')', 'ok');
+    const u = new SpeechSynthesisUtterance('नमस्ते। यह हिंदी भाषण परीक्षण है।');
+    u.voice = hindi; u.lang = 'hi-IN'; u.rate = 0.9;
+    u.onend = () => write('Hindi TTS finished ✅', 'ok');
+    u.onerror = (e) => write('Hindi TTS error: '+e.error, 'err');
+    speechSynthesis.speak(u);
+  } else {
+    write('❌ No Hindi voice found. Install Hindi from Windows → Settings → Speech', 'err');
+    if (typeof window.speak === 'function') {
+      window.speak('No Hindi voice found. Please install Hindi from Windows Speech settings.');
+    }
+  }
+}
+
+function clearLog() { log.innerHTML=''; }
+
+// Auto-run on load
+setTimeout(runTests, 1000);
+</script>
+
+<!-- Sample content for read page testing -->
+<div style="margin-top:40px;border-top:1px solid #1e3a5f;padding-top:20px">
+<h3 style="color:#00c9a7">Sample Content (for read page test)</h3>
+<h2>Introduction to AI</h2>
+<p>Artificial Intelligence is transforming how we interact with technology. Voice assistants like VisionaryAI help users with visual impairments navigate the web.</p>
+<p>This sample page can be used to test the read page command.</p>
+<h2>हिंदी परीक्षण (Hindi Test)</h2>
+<p>यह हिंदी में एक परीक्षण वाक्य है। विज़नरी ए आई हिंदी और मराठी भाषाओं का समर्थन करता है।</p>
+<h2>मराठी चाचणी (Marathi Test)</h2>
+<p>हे मराठीतील एक चाचणी वाक्य आहे. विझनरी ए आय मराठी भाषेला समर्थन देते.</p>
+</div>
+</body>
+</html>

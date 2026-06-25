@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><title>TTS Voice Checker</title></head>
+<body style="font-family:monospace;padding:20px;background:#111;color:#0f0">
+<h2 style="color:#0ff">Available TTS Voices on this system</h2>
+<div id="out">Loading...</div>
+<script>
+function check() {
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) { setTimeout(check, 500); return; }
+  const div = document.getElementById('out');
+  const hindi   = voices.filter(v => v.lang.startsWith('hi'));
+  const marathi = voices.filter(v => v.lang.startsWith('mr'));
+  const all     = voices;
+
+  let html = '<b style="color:yellow">Total voices: ' + all.length + '</b><br><br>';
+
+  html += '<b style="color:#f80">Hindi voices (' + hindi.length + '):</b><br>';
+  hindi.forEach(v => html += '&nbsp;&nbsp;' + v.name + ' | ' + v.lang + ' | local:' + v.localService + '<br>');
+  if (!hindi.length) html += '&nbsp;&nbsp;<span style="color:red">NONE FOUND</span><br>';
+
+  html += '<br><b style="color:#f80">Marathi voices (' + marathi.length + '):</b><br>';
+  marathi.forEach(v => html += '&nbsp;&nbsp;' + v.name + ' | ' + v.lang + ' | local:' + v.localService + '<br>');
+  if (!marathi.length) html += '&nbsp;&nbsp;<span style="color:red">NONE FOUND</span><br>';
+
+  html += '<br><b style="color:#0ff">All voices:</b><br>';
+  all.forEach(v => html += '&nbsp;&nbsp;' + v.name + ' | ' + v.lang + '<br>');
+
+  div.innerHTML = html;
+}
+speechSynthesis.onvoiceschanged = check;
+check();
+</script>
+</body>
+</html>

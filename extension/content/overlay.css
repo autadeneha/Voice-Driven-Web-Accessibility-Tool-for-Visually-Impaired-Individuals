@@ -1,0 +1,336 @@
+/* VisionaryAI Extension — Injected Overlay Styles */
+
+:root {
+  --vai-teal:    #00c9a7;
+  --vai-teal-g:  rgba(0,201,167,.35);
+  --vai-orange:  #ff6b35;
+  --vai-bg:      rgba(10,22,40,.96);
+  --vai-surface: rgba(17,34,60,.98);
+  --vai-border:  rgba(0,201,167,.22);
+  --vai-text:    #e2e8f0;
+  --vai-muted:   #7a9bb5;
+  --vai-success: #10b981;
+  --vai-warn:    #f59e0b;
+  --vai-error:   #ef4444;
+  --vai-r:       12px;
+}
+
+/* ── Orb ─────────────────────────────────────────────────────────────── */
+
+#vai-orb-wrap {
+  position: fixed !important;
+  bottom: 22px !important;
+  right: 22px !important;
+  z-index: 2147483640 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 6px !important;
+  opacity: 0;
+  transform: scale(.7);
+  transition: opacity .35s, transform .35s;
+  pointer-events: none;
+}
+
+#vai-orb-wrap.visible {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+  pointer-events: all !important;
+}
+
+#vai-orb {
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 50% !important;
+  background: radial-gradient(circle at 35% 35%, #2dd4b8, #00c9a7 55%, #007a66) !important;
+  box-shadow: 0 0 20px rgba(0,201,167,.6), 0 4px 16px rgba(0,0,0,.5) !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 24px !important;
+  line-height: 1 !important;
+  user-select: none !important;
+  transition: transform .2s, box-shadow .3s !important;
+  animation: vai-orb-idle 3s ease-in-out infinite !important;
+  outline: none !important;
+}
+
+#vai-orb:hover { transform: scale(1.12) !important; }
+#vai-orb:focus-visible { outline: 2px solid var(--vai-teal) !important; }
+
+#vai-orb.listening  { animation: vai-orb-idle 3s ease-in-out infinite !important; }
+#vai-orb.speaking   {
+  animation: vai-orb-speak .6s ease-in-out infinite alternate !important;
+  background: radial-gradient(circle at 35% 35%, #6ee7b7,#10b981 55%,#065f46) !important;
+  box-shadow: 0 0 24px rgba(16,185,129,.7) !important;
+}
+#vai-orb.processing {
+  animation: vai-orb-spin 1.1s linear infinite !important;
+  background: radial-gradient(circle at 35% 35%, #fde68a,#f59e0b 55%,#92400e) !important;
+  box-shadow: 0 0 22px rgba(245,158,11,.7) !important;
+}
+#vai-orb.inactive { opacity: .5 !important; animation: none !important; }
+
+@keyframes vai-orb-idle  { 0%,100%{box-shadow:0 0 14px rgba(0,201,167,.45)} 50%{box-shadow:0 0 30px rgba(0,201,167,.85)} }
+@keyframes vai-orb-speak { from{transform:scale(1)} to{transform:scale(1.14)} }
+@keyframes vai-orb-spin  { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+#vai-status-label {
+  background: var(--vai-bg) !important;
+  border: 1px solid var(--vai-border) !important;
+  color: var(--vai-teal) !important;
+  font-size: 11px !important;
+  padding: 3px 10px !important;
+  border-radius: 20px !important;
+  white-space: nowrap !important;
+  font-family: 'Segoe UI',system-ui,sans-serif !important;
+  pointer-events: none !important;
+}
+
+/* ── Toasts ──────────────────────────────────────────────────────────── */
+
+#vai-toast-container {
+  position: fixed !important;
+  bottom: 92px !important;
+  right: 22px !important;
+  z-index: 2147483641 !important;
+  display: flex !important;
+  flex-direction: column-reverse !important;
+  gap: 8px !important;
+  pointer-events: none !important;
+  max-width: 300px !important;
+}
+
+.vai-toast {
+  background: var(--vai-surface) !important;
+  border: 1px solid var(--vai-border) !important;
+  border-radius: var(--vai-r) !important;
+  color: var(--vai-text) !important;
+  font-size: 13px !important;
+  font-family: 'Segoe UI',system-ui,sans-serif !important;
+  padding: 10px 14px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,.5) !important;
+  opacity: 0 !important;
+  transform: translateX(30px) !important;
+  transition: opacity .25s, transform .25s !important;
+}
+.vai-toast.show { opacity: 1 !important; transform: translateX(0) !important; }
+.vai-toast-label {
+  font-size: 10px !important;
+  color: var(--vai-teal) !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .07em !important;
+  margin-bottom: 3px !important;
+}
+
+/* ── Wake banner ─────────────────────────────────────────────────────── */
+
+#vai-wake-banner {
+  position: fixed !important;
+  top: 16px !important;
+  left: 50% !important;
+  transform: translateX(-50%) translateY(-80px) !important;
+  background: var(--vai-surface) !important;
+  border: 1px solid var(--vai-border) !important;
+  border-radius: 30px !important;
+  padding: 10px 24px !important;
+  font-family: 'Segoe UI',system-ui,sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--vai-teal) !important;
+  z-index: 2147483647 !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,.5) !important;
+  transition: transform .35s cubic-bezier(.34,1.56,.64,1) !important;
+  pointer-events: none !important;
+  white-space: nowrap !important;
+}
+#vai-wake-banner.show { transform: translateX(-50%) translateY(0) !important; }
+
+/* ── Audit panel ─────────────────────────────────────────────────────── */
+
+#vai-audit-panel {
+  position: fixed !important;
+  top: 60px !important;
+  right: 16px !important;
+  width: 340px !important;
+  max-height: 70vh !important;
+  overflow-y: auto !important;
+  background: var(--vai-surface) !important;
+  border: 1px solid var(--vai-border) !important;
+  border-radius: 14px !important;
+  z-index: 2147483639 !important;
+  padding: 14px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,.6) !important;
+  font-family: 'Segoe UI',system-ui,sans-serif !important;
+  color: var(--vai-text) !important;
+  display: none !important;
+}
+#vai-audit-panel.visible { display: block !important; }
+#vai-audit-panel h3 {
+  font-size: 14px !important;
+  margin-bottom: 10px !important;
+  color: var(--vai-teal) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+#vai-audit-close {
+  background: none !important;
+  border: none !important;
+  color: var(--vai-muted) !important;
+  cursor: pointer !important;
+  font-size: 20px !important;
+}
+#vai-audit-close:hover { color: var(--vai-text) !important; }
+
+.vai-score-meter { margin-bottom: 12px !important; }
+.vai-score-circle {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(0,0,0,.3) !important;
+  border: 2px solid var(--score-color, var(--vai-teal)) !important;
+  border-radius: 50% !important;
+  width: 72px !important;
+  height: 72px !important;
+  margin-bottom: 10px !important;
+}
+.vai-score-num { font-size: 22px !important; font-weight: 700 !important; color: var(--score-color, var(--vai-teal)) !important; }
+.vai-score-lbl { font-size: 10px !important; color: var(--vai-muted) !important; }
+.vai-score-cat { display: flex !important; align-items: center !important; gap: 6px !important; margin-bottom: 4px !important; font-size: 11px !important; }
+.vai-score-bar-wrap { flex: 1 !important; height: 6px !important; background: #1e293b !important; border-radius: 3px !important; overflow: hidden !important; }
+.vai-score-bar { height: 100% !important; border-radius: 3px !important; transition: width .5s !important; }
+.vai-audit-badge {
+  display: inline-block !important; padding: 2px 8px !important;
+  border-radius: 10px !important; font-size: 11px !important;
+  font-weight: 600 !important; margin-right: 4px !important;
+}
+.vai-audit-badge.error   { background: rgba(239,68,68,.2)  !important; color: var(--vai-error) !important; }
+.vai-audit-badge.warning { background: rgba(245,158,11,.2) !important; color: var(--vai-warn)  !important; }
+.vai-audit-badge.minor   { background: rgba(99,102,241,.2) !important; color: #818cf8 !important; }
+.vai-audit-list { list-style: none !important; margin-top: 10px !important; padding: 0 !important; }
+.vai-audit-item { display: flex !important; gap: 8px !important; padding: 7px 8px !important; border-radius: 8px !important; margin-bottom: 5px !important; font-size: 12px !important; }
+.vai-audit-item.error   { background: rgba(239,68,68,.08)  !important; }
+.vai-audit-item.warning { background: rgba(245,158,11,.08) !important; }
+.vai-audit-item.minor   { background: rgba(99,102,241,.08) !important; }
+.vai-audit-item strong  { display: block !important; font-size: 11px !important; margin-bottom: 2px !important; }
+.vai-audit-item p       { color: var(--vai-muted) !important; font-size: 11px !important; margin: 0 !important; }
+
+/* ── Reading ruler ───────────────────────────────────────────────────── */
+
+#vai-reading-ruler {
+  position: fixed !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 40px !important;
+  background: rgba(0,201,167,.08) !important;
+  border-top: 2px solid rgba(0,201,167,.4) !important;
+  border-bottom: 2px solid rgba(0,201,167,.4) !important;
+  pointer-events: none !important;
+  z-index: 2147483638 !important;
+  transition: top .04s linear !important;
+}
+
+/* ── Chatbot panel ───────────────────────────────────────────────────── */
+
+#vai-chat-panel {
+  position: fixed !important;
+  bottom: 90px !important;
+  right: 22px !important;
+  width: 320px !important;
+  height: 400px !important;
+  background: var(--vai-surface) !important;
+  border: 1px solid var(--vai-border) !important;
+  border-radius: 16px !important;
+  z-index: 2147483640 !important;
+  display: none !important;
+  flex-direction: column !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,.6) !important;
+  font-family: 'Segoe UI',system-ui,sans-serif !important;
+  overflow: hidden !important;
+}
+#vai-chat-panel.visible { display: flex !important; }
+
+.vai-chat-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 12px 14px !important;
+  border-bottom: 1px solid var(--vai-border) !important;
+  background: rgba(0,201,167,.08) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: var(--vai-teal) !important;
+}
+#vai-chat-close {
+  background: none !important;
+  border: none !important;
+  color: var(--vai-muted) !important;
+  cursor: pointer !important;
+  font-size: 20px !important;
+}
+
+.vai-chat-messages {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 10px 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+.vai-chat-messages::-webkit-scrollbar { width: 4px !important; }
+.vai-chat-messages::-webkit-scrollbar-thumb { background: var(--vai-border) !important; border-radius: 2px !important; }
+
+.vai-chat-msg {
+  max-width: 90% !important;
+  padding: 8px 12px !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  color: var(--vai-text) !important;
+}
+.vai-chat-msg.bot {
+  background: rgba(0,201,167,.1) !important;
+  border: 1px solid var(--vai-border) !important;
+  align-self: flex-start !important;
+  border-bottom-left-radius: 4px !important;
+}
+.vai-chat-msg.user {
+  background: rgba(255,107,53,.15) !important;
+  border: 1px solid rgba(255,107,53,.3) !important;
+  align-self: flex-end !important;
+  border-bottom-right-radius: 4px !important;
+}
+
+.vai-chat-input-row {
+  display: flex !important;
+  gap: 6px !important;
+  padding: 10px 12px !important;
+  border-top: 1px solid var(--vai-border) !important;
+}
+#vai-chat-input {
+  flex: 1 !important;
+  background: rgba(0,0,0,.3) !important;
+  border: 1px solid var(--vai-border) !important;
+  border-radius: 8px !important;
+  color: var(--vai-text) !important;
+  padding: 7px 10px !important;
+  font-size: 12px !important;
+  font-family: inherit !important;
+  outline: none !important;
+}
+#vai-chat-input:focus { border-color: var(--vai-teal) !important; }
+#vai-chat-send {
+  background: var(--vai-teal) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: #000 !important;
+  padding: 7px 12px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+#vai-chat-send:hover { background: #00a88c !important; }

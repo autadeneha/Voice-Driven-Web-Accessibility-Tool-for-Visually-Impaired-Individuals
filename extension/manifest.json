@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "name": "VisionaryAI — Voice Accessibility",
+  "version": "2.0.0",
+  "description": "Voice-first AI accessibility for every website. Say 'Hey Vision' to activate. Powered by Mistral Pixtral.",
+
+  "icons": {
+    "16":  "icons/icon16.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tts"
+  ],
+
+  "host_permissions": [
+    "<all_urls>",
+    "https://api.openai.com/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "VisionaryAI — Say 'Hey Vision' to activate"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "content/pii-scrubber.js",
+        "content/preferences.js",
+        "content/ui-overlay.js",
+        "content/reader.js",
+        "content/intent-engine.js",
+        "content/navigator.js",
+        "content/spatial-audio.js",
+        "content/image-ai.js",
+        "content/form-voice.js",
+        "content/auditor.js",
+        "content/cognitive-mode.js",
+        "content/voice-engine.js"
+      ],
+      "css": ["content/overlay.css"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*", "lib/*", "content/overlay.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

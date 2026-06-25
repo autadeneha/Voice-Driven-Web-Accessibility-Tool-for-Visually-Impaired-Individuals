@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>VisionaryAI</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="popup-container">
+
+    <!-- ── Header ──────────────────────────────────────────────────── -->
+    <div class="popup-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+            <path d="M12 2C8.5 2 6 4.5 6 7v5c0 3.3 2.7 6 6 6s6-2.7 6-6V7c0-2.5-2.5-5-6-5z" fill="white"/>
+            <path d="M3 11v1c0 5 4 9 9 9s9-4 9-9v-1" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <line x1="12" y1="21" x2="12" y2="24" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <line x1="8" y1="24" x2="16" y2="24" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">VisionaryAI</span>
+          <span class="brand-sub">Voice Assistant</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="status-dot" id="status-dot"></div>
+      </div>
+    </div>
+
+    <!-- ── Mic Orb Section ──────────────────────────────────────────── -->
+    <div class="orb-section">
+      <div class="orb-glow-ring" id="orb-glow-ring">
+        <div class="orb-button" id="orb-btn" title="Click to restart voice" tabindex="0" role="button" aria-label="Restart voice assistant">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="38" height="38">
+            <path d="M12 2C9.5 2 7.5 4 7.5 6.5v6c0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5v-6C16.5 4 14.5 2 12 2z" fill="currentColor"/>
+            <path d="M4.5 11v1c0 4.1 3.4 7.5 7.5 7.5s7.5-3.4 7.5-7.5v-1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="12" y1="19.5" x2="12" y2="22.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="9" y1="22.5" x2="15" y2="22.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Waveform bars -->
+      <div class="waveform" id="waveform">
+        <div class="bar b1"></div>
+        <div class="bar b2"></div>
+        <div class="bar b3"></div>
+        <div class="bar b4"></div>
+        <div class="bar b5"></div>
+      </div>
+
+      <!-- Status badge -->
+      <div class="status-badge" id="status-badge">LISTENING</div>
+
+      <!-- Wake word hint -->
+      <div class="wake-hint">Say <strong>"Hey Vision"</strong> to activate</div>
+    </div>
+
+    <!-- ── Tabs ─────────────────────────────────────────────────────── -->
+    <div class="tab-bar">
+      <button class="tab active" data-tab="headings">Page Headings</button>
+      <button class="tab" data-tab="actions">Actions</button>
+      <button class="tab" data-tab="settings">Settings</button>
+    </div>
+
+    <!-- ── Tab: Page Headings ────────────────────────────────────────── -->
+    <div class="tab-content active" id="tab-headings">
+      <div class="headings-list" id="headings-list">
+        <div class="headings-empty">Loading page headings...</div>
+      </div>
+    </div>
+
+    <!-- ── Tab: Actions ─────────────────────────────────────────────── -->
+    <div class="tab-content" id="tab-actions">
+      <div class="btn-grid">
+        <button class="action-btn primary" data-cmd="readPage()">
+          <span class="btn-icon">▶</span> Read Page
+        </button>
+        <button class="action-btn" data-cmd="summarizePage('brief')">
+          <span class="btn-icon">⚡</span> Summarize
+        </button>
+        <button class="action-btn" data-cmd="describeImages('detailed')">
+          <span class="btn-icon">🖼</span> Describe Image
+        </button>
+        <button class="action-btn" data-cmd="runAccessibilityAudit()">
+          <span class="btn-icon">🛡</span> WCAG Audit
+        </button>
+        <button class="action-btn" data-cmd="startFormSession()">
+          <span class="btn-icon">📋</span> Voice Form
+        </button>
+        <button class="action-btn" data-cmd="buildAudioMap()">
+          <span class="btn-icon">🗺</span> Page Map
+        </button>
+        <button class="action-btn primary" data-cmd="if(typeof vaiShowChat==='function')vaiShowChat();if(typeof startChat==='function')startChat();">
+          <span class="btn-icon">💬</span> AI Chat
+        </button>
+        <button class="action-btn" data-cmd="pauseReading()">
+          <span class="btn-icon">⏸</span> Pause
+        </button>
+        <button class="action-btn danger" data-cmd="stopReading()">
+          <span class="btn-icon">⏹</span> Stop
+        </button>
+      </div>
+
+      <!-- Cognitive toggles -->
+      <div class="section-label" style="margin-top:10px;">Cognitive Modes</div>
+      <div class="toggle-grid">
+        <label class="cog-row">
+          <span>Declutter</span>
+          <input type="checkbox" id="tog-declutter" class="cog-cb" data-fn="toggleDeclutter" />
+          <span class="tog-track"></span>
+        </label>
+        <label class="cog-row">
+          <span>Dyslexic Font</span>
+          <input type="checkbox" id="tog-dyslexic" class="cog-cb" data-fn="toggleDyslexicFont" />
+          <span class="tog-track"></span>
+        </label>
+        <label class="cog-row">
+          <span>Reading Ruler</span>
+          <input type="checkbox" id="tog-ruler" class="cog-cb" data-fn="toggleReadingRuler" />
+          <span class="tog-track"></span>
+        </label>
+        <label class="cog-row">
+          <span>Focus Mode</span>
+          <input type="checkbox" id="tog-focus" class="cog-cb" data-fn="toggleFocusMode" />
+          <span class="tog-track"></span>
+        </label>
+      </div>
+      <button class="reset-modes-btn" id="btn-reset-modes" title="Turn off all cognitive modes">
+        ✕ Turn Off All Modes
+      </button>
+    </div>
+
+    <!-- ── Tab: Settings ────────────────────────────────────────────── -->
+    <div class="tab-content" id="tab-settings">
+
+      <!-- ── OpenAI API Key ──────────────────────────────────────────── -->
+      <div class="api-key-box">
+        <div class="api-key-header">
+          <span class="api-key-icon">🔑</span>
+          <div>
+            <div class="api-key-title">OpenAI API Key</div>
+            <div class="api-key-sub">Powers AI Chat, Summarize &amp; Image AI</div>
+          </div>
+          <div class="api-key-status" id="api-key-status">Not set</div>
+        </div>
+        <div class="api-key-input-row">
+          <input
+            type="password"
+            id="openai-key-input"
+            placeholder="sk-proj-..."
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="OpenAI API Key"
+            class="api-key-input"
+          />
+          <button id="api-key-toggle" class="api-key-btn-icon" aria-label="Show/hide key" title="Show/hide">👁</button>
+        </div>
+        <div class="api-key-actions">
+          <button id="api-key-save" class="api-key-save-btn">Save Key</button>
+          <button id="api-key-clear" class="api-key-clear-btn">Clear</button>
+        </div>
+        <div class="api-key-info">
+          <strong>How to get your key:</strong><br/>
+          1. Go to <span class="api-link">platform.openai.com/api-keys</span><br/>
+          2. Click <em>Create new secret key</em><br/>
+          3. Copy the key starting with <code>sk-</code><br/>
+          4. Paste it above and click <strong>Save Key</strong>
+        </div>
+        <div class="api-key-note">
+          🔒 Stored locally on your device only. Never sent anywhere except OpenAI.
+        </div>
+      </div>
+
+      <div class="settings-panel">
+
+        <div class="setting-row">
+          <label>Persona</label>
+          <select id="pop-persona" class="pop-select">
+            <option value="narrator">🎙 Narrator</option>
+            <option value="teacher">📚 Teacher</option>
+            <option value="friend">😊 Friend</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <label>Reading Depth</label>
+          <select id="pop-depth" class="pop-select">
+            <option value="brief">Brief</option>
+            <option value="standard" selected>Standard</option>
+            <option value="deep">Deep</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <label>Speed</label>
+          <input type="range" id="pop-speed" min="0.5" max="3" step="0.1" value="1" class="pop-slider" />
+          <span id="pop-speed-val" class="slider-val">1.0x</span>
+        </div>
+
+        <div class="setting-row">
+          <label>Pitch</label>
+          <input type="range" id="pop-pitch" min="0" max="2" step="0.1" value="1" class="pop-slider" />
+          <span id="pop-pitch-val" class="slider-val">1.0</span>
+        </div>
+
+      </div>
+
+      <!-- Voice commands reference -->
+      <div class="section-label" style="margin-top:10px;">Voice Commands</div>
+      <div class="cmd-grid">
+        <div class="cmd-group">
+          <div class="cmd-cat-label">Reading</div>
+          <span class="cmd-pill">"read page"</span>
+          <span class="cmd-pill">"pause"</span>
+          <span class="cmd-pill">"resume"</span>
+          <span class="cmd-pill">"stop"</span>
+          <span class="cmd-pill">"faster"</span>
+          <span class="cmd-pill">"slower"</span>
+        </div>
+        <div class="cmd-group">
+          <div class="cmd-cat-label">Navigation</div>
+          <span class="cmd-pill">"next section"</span>
+          <span class="cmd-pill">"next heading"</span>
+          <span class="cmd-pill">"go to top"</span>
+          <span class="cmd-pill">"scroll down"</span>
+        </div>
+        <div class="cmd-group">
+          <div class="cmd-cat-label">AI Features</div>
+          <span class="cmd-pill">"summarize page"</span>
+          <span class="cmd-pill">"describe image"</span>
+          <span class="cmd-pill">"deep description"</span>
+          <span class="cmd-pill">"describe all images"</span>
+        </div>
+        <div class="cmd-group">
+          <div class="cmd-cat-label">Cognitive</div>
+          <span class="cmd-pill">"declutter"</span>
+          <span class="cmd-pill">"focus mode"</span>
+          <span class="cmd-pill">"reading ruler"</span>
+          <span class="cmd-pill">"dyslexic font"</span>
+        </div>
+        <div class="cmd-group">
+          <div class="cmd-cat-label">Forms & Tools</div>
+          <span class="cmd-pill">"start form"</span>
+          <span class="cmd-pill">"audit this page"</span>
+          <span class="cmd-pill">"page overview"</span>
+          <span class="cmd-pill">"help"</span>
+        </div>
+        <div class="cmd-group">
+          <div class="cmd-cat-label">Personas</div>
+          <span class="cmd-pill">"narrator mode"</span>
+          <span class="cmd-pill">"teacher mode"</span>
+          <span class="cmd-pill">"friend mode"</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="popup-footer">◈ VisionaryAI · Works on every Chrome website ♿</div>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
